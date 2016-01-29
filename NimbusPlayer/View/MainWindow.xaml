@@ -1,0 +1,234 @@
+﻿<Window x:Class="NimbusPlayer.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:NimbusPlayer"
+        mc:Ignorable="d"
+        xmlns:viewModel="clr-namespace:NimbusPlayer.ViewModel"
+        d:DataContext="{d:DesignInstance d:Type=viewModel:PlayerViewModel}"
+        Title="MainWindow" Height="497" Width="700" Visibility="Visible">
+    <Window.Resources>
+
+    </Window.Resources>
+
+    <Grid Background="White">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="30"/>
+            <RowDefinition/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto" MinWidth="150" MaxWidth="200"/>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+        <StackPanel Orientation="Horizontal" Background="White" Margin="0,0,0,0" Grid.Column="0" Grid.ColumnSpan="2">
+            <Button x:Name="BackButton"
+                        Height="24"
+                        Width="40"
+                        Command="{Binding SkipBackwardCommand}"
+                        Margin="0,3,0,0"
+                        Background="Transparent"
+                        BorderBrush="Transparent"
+                        BorderThickness="0"
+                        Padding="-4">
+                <Image Source="../Icons/back.png"
+                           RenderOptions.BitmapScalingMode="HighQuality" 
+                           Height="20"/>
+            </Button>
+
+            <Button x:Name="PlayButton"
+                        Height="24"
+                        Width="35"
+                        Margin="0,3,0,0"
+                        Background="Transparent"
+                        BorderBrush="Transparent"
+                        BorderThickness="0"
+                        Padding="-4">
+                <Button.Style>
+                    <Style TargetType="Button">
+                        <Style.Setters>
+                            <Setter Property="Template">
+                                <Setter.Value>
+                                    <ControlTemplate TargetType="Button">
+                                        <Border x:Name="Border"
+                                                    BorderThickness="0"
+                                                    Background="Transparent">
+                                            <ContentPresenter
+                                                    VerticalAlignment="Center"
+                                                    HorizontalAlignment="Center"
+                                                    Content="{TemplateBinding Content}"/>
+                                        </Border>
+                                        <ControlTemplate.Triggers>
+                                            <Trigger Property="IsMouseOver" Value="True">
+                                                <Setter TargetName="Border" Property="Background" Value="LightBlue"/>
+                                            </Trigger>
+                                            <DataTrigger Binding="{Binding IsPlaying}" Value="True">
+                                                <Setter Property="Content">
+                                                    <Setter.Value>
+                                                        <Image Source="../Icons/pause.png"
+                                                                   RenderOptions.BitmapScalingMode="HighQuality" 
+                                                                   Height="20"/>
+                                                    </Setter.Value>
+                                                </Setter>
+                                                <Setter Property="Command" Value="{Binding PauseCommand}"/>
+                                            </DataTrigger>
+                                            <DataTrigger Binding="{Binding IsPlaying}" Value="False">
+                                                <Setter Property="Content">
+                                                    <Setter.Value>
+                                                        <Image Source="../Icons/play.png"
+                                                                   RenderOptions.BitmapScalingMode="HighQuality"
+                                                                   Height="20"/>
+                                                    </Setter.Value>
+                                                </Setter>
+                                                <Setter Property="Command" Value="{Binding PlayCommand}"/>
+                                            </DataTrigger>
+                                        </ControlTemplate.Triggers>
+                                    </ControlTemplate>
+                                </Setter.Value>
+                            </Setter>
+                        </Style.Setters>
+                    </Style>
+                </Button.Style>
+            </Button>
+
+            <Button x:Name="ForwardButton"
+                        Height="24"
+                        Width="40"
+                        Margin="0,3,0,0"
+                        Command="{Binding SkipForwardCommand}"
+                        Background="Transparent"
+                        BorderBrush="Transparent"
+                        BorderThickness="0"
+                        Padding="-4">
+                <Image Source="../Icons/forward.png"
+                               RenderOptions.BitmapScalingMode="HighQuality"
+                               Height="20"/>
+            </Button>
+
+            <ContentPresenter
+                Height="22"
+                Width="25"
+                Margin="5,2,0,0">
+                <ContentPresenter.Content>
+                    <Image Source="../Icons/volume.png"
+                           RenderOptions.BitmapScalingMode="HighQuality"/>
+                </ContentPresenter.Content>
+            </ContentPresenter>
+
+            <Slider x:Name="slider"
+            	Margin="5,6,5,0"
+            	Width="90"
+            	Minimum="0"
+            	Maximum="1"
+            	Value="{Binding Volume}"/>
+
+            <TextBlock
+                Width="50"
+                Margin="0,5,0,0"
+                Text="{Binding VolumeTextValue}"/>
+
+            <Slider x:Name="SongProgress"
+                    Width="235"
+                    ValueChanged="SongProgress_OnValueChanged"
+                    Margin="5,6,0,0"
+                    Minimum="0"
+                    Value="{Binding ProgressValue}"
+                    Maximum="{Binding TotalDuration}"/>
+
+            <TextBlock Width="50"
+                       Margin="0,5,0,0"
+                       Text="{Binding ProgressTextValue}"/>
+
+            <TextBlock Width="50"
+                       Margin="0,5,0,0"
+                       Text="{Binding TotalDurationTextValue}"/>
+
+            <Button Content="Settings"
+                    PreviewMouseLeftButtonUp="Settings_Click"/>
+
+        </StackPanel>
+
+        <ListView Grid.Row="1" 
+                  Grid.Column="0"  
+                  ItemsSource="{Binding Albums}"
+                  MouseDoubleClick="Album_MouseDoubleClick">
+            <ListView.View>
+                <GridView >
+                    <GridView.ColumnHeaderContainerStyle>
+                        <Style BasedOn="{StaticResource {x:Type GridViewColumnHeader}}" TargetType="{x:Type GridViewColumnHeader}">
+                            <Setter Property="IsHitTestVisible" Value="False"/>
+                        </Style>
+                    </GridView.ColumnHeaderContainerStyle>
+                    <GridViewColumn Header="Albums" DisplayMemberBinding="{Binding AlbumName}"/>
+                </GridView>
+            </ListView.View>
+        </ListView>
+        <Image Source="{Binding AlbumArt}"
+               Stretch="Uniform"
+               Grid.Row="2"
+               Grid.Column="0"
+               Width="200"
+               RenderOptions.BitmapScalingMode="Fant"/>
+
+        
+
+        <DataGrid x:Name="SongListView"
+                  SelectionMode="Single"
+                  Grid.Row="1" 
+                  Grid.Column="1" 
+                  Background="White" 
+                  Grid.RowSpan="3"
+                  ScrollViewer.CanContentScroll="True" 
+                  ScrollViewer.HorizontalScrollBarVisibility="Auto"
+                  MouseDoubleClick="Control_OnMouseDoubleClick"
+                  MouseRightButtonUp="DataGrid_MouseRightButtonUp"
+                  SelectedItem="{Binding CurrentSong, Mode=OneWay}"
+                  ItemsSource="{Binding Playlist}"
+                  AutoGenerateColumns="False">
+            <DataGrid.Columns>
+                <DataGridTemplateColumn Header="Playing" Width="50" IsReadOnly="True">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <TextBlock>
+                                <TextBlock.Style>
+                                    <Style TargetType="{x:Type TextBlock}">
+                                        <Style.Triggers>
+                                            <DataTrigger Binding="{Binding IsPlaying}" Value="True">
+                                                <Setter Property="Text" Value="x"/>
+                                            </DataTrigger>
+                                        </Style.Triggers>
+                                    </Style>
+                                </TextBlock.Style>
+                            </TextBlock>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTemplateColumn Header="Title" Width="SizeToCells" IsReadOnly="True">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding Title}"/>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTemplateColumn Header="Artist" Width="SizeToCells" IsReadOnly="True">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding Artist}"/>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTemplateColumn Header="Album" Width="SizeToCells" IsReadOnly="True">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <TextBlock Text="{Binding Album}"/>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+            </DataGrid.Columns>
+            
+        </DataGrid>
+    </Grid>
+
+
+</Window>
