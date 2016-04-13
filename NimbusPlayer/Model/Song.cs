@@ -23,10 +23,18 @@ namespace NimbusPlayer.Model
 
         public void SetupMetadata()
         {
-            TagLib.File file = TagLib.File.Create(FilePath);
-            Title = file.Tag.Title;
-            FormatArtist(file.Tag.Performers);
-            Album = file.Tag.Album;
+            try
+            {
+                TagLib.File file = TagLib.File.Create(FilePath);
+                Title = file.Tag.Title;
+                FormatArtist(file.Tag.Performers);
+                Album = file.Tag.Album;
+            }
+            catch (Exception)
+            {
+                return;
+                //TODO: Add way of showing user what is an issue
+            }
         }
 
         public void FormatArtist(string[] peformers)
