@@ -1,5 +1,7 @@
 # NimbusPlayer
-A simple music player using C#
+A simple music player using C#, WPF
 
 
-https://drive.google.com/open?id=0B7Ba-zZWtc8QX3d0SFA1VkJKaDg
+# Prerequisites
+
+Currently due to the way I have hard coded the album art there needs to be a image of the album art called cover.jpg inside the folder for the music. 
